@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EzRugged - Sign In</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+
+            /* Geometric Background */
+            body::before {
+                content: "";
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 70%), linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
+                background-size: 100px 100px;
+                z-index: -1;
+            }
+
+        h1 {
+            font-family: 'Rubik Spray Paint', cursive;
+            font-size: 60px;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .container {
+            text-align: center;
+            width: 350px;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #fff;
+            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-family: Arial, sans-serif; /* Normal font */
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #fff;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #fff;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+            button:hover {
+                background: #ccc;
+            }
+
+        .register-btn {
+            background: none;
+            border: 1px solid #fff;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+            .register-btn:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+
+        /* Fake loading animation */
+        .loading {
+            display: none;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>EzRugged</h1> <!-- Title with spray paint font -->
+
+    <div class="container">
+        <h2>Sign In</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="fakeLogin()">Sign In</button>
+        <button class="register-btn" onclick="reloadPage()">Register</button>
+        <p class="loading" id="loadingText">Authenticating...</p>
+    </div>
+
+    <script>
+        function fakeLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loadingText = document.getElementById('loadingText');
+
+            if (username && password) {
+                loadingText.style.display = "block";
+
+                setTimeout(() => {
+                    window.location.href = "token.html"; // Redirect to token creation page
+                }, 2000);
+            } else {
+                alert("Please enter a username and password.");
+            }
+        }
+
+        function reloadPage() {
+            location.reload();
+        }
+    </script>
+
+</body>
+</html>
