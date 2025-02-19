@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzRugged - Create Token</title>
-    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@solana/web3.js@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&display=swap');
         
@@ -99,33 +99,45 @@
             }
         }
 
-        async function triggerPayment() {
-            if (!provider || !provider.isConnected) {
-                alert("Please connect your Phantom Wallet first.");
-                return;
-            }
-
-            const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet'));
-            const transaction = new solanaWeb3.Transaction();
-            const recipient = new solanaWeb3.PublicKey("YourWalletAddressHere");
-            const amount = 0.01 * solanaWeb3.LAMPORTS_PER_SOL; // Change fee as needed
-            
-            const instruction = solanaWeb3.SystemProgram.transfer({
-                fromPubkey: provider.publicKey,
-                toPubkey: recipient,
-                lamports: amount
-            });
-            transaction.add(instruction);
-            
-            try {
-                const { signature } = await provider.signAndSendTransaction(transaction);
-                await connection.confirmTransaction(signature);
-                alert("Payment successful! Transaction Signature: " + signature);
-            } catch (err) {
-                console.error(err);
-                alert("Payment failed. Please try again.");
-            }
+       async function sendPayment() {
+    try {
+        if (!window.solana || !window.solana.isPhantom) {
+            alert("Phantom Wallet not detected. Please install it and try again.");
+            return;
         }
+
+        console.log("Attempting to send payment...");
+
+        const provider = window.solana;
+        await provider.connect(); // Request wallet connection
+
+        const connection = new solanaWeb3.Connection(solanaWeb3.clusterApiUrl('devnet')); // Change to 'mainnet-beta' if using real funds
+
+        const transaction = new solanaWeb3.Transaction().add(
+            solanaWeb3.SystemProgram.transfer({
+                fromPubkey: provider.publicKey,
+                toPubkey: new solanaWeb3.PublicKey("TARGET_WALLET_ADDRESS"), // Replace with the actual wallet address
+                lamports: 1000000 // 0.001 SOL
+            })
+        );
+
+        const { blockhash } = await connection.getLatestBlockhash();
+        transaction.recentBlockhash = blockhash;
+        transaction.feePayer = provider.publicKey;
+
+        console.log("Transaction created:", transaction);
+
+        const signedTransaction = await provider.signTransaction(transaction);
+        const signature = await connection.sendRawTransaction(signedTransaction.serialize());
+
+        console.log("Transaction submitted:", signature);
+        alert("Payment successful! Transaction ID: " + signature);
+    } catch (error) {
+        console.error("Payment failed:", error);
+        alert("Payment failed: " + error.message);
+    }
+}
+
     </script>
 </body>
 </html>
