@@ -125,6 +125,11 @@
                     alert("Phantom Wallet not found! Install it from https://phantom.app/");
                     return;
                 }
+if (window.solana && window.solana.isPhantom) {
+    console.log("Phantom Wallet is installed!");
+} else {
+    console.log("Phantom Wallet NOT detected!");
+}
 
                 const response = await provider.connect();
                 walletPublicKey = response.publicKey.toString();
