@@ -4,139 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EzRugged - Token Creation</title>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Rubik+Spray+Paint&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background-color: #000;
-            color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            height: 100vh;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* Geometric Background */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 70%), 
-                        linear-gradient(45deg, rgba(255, 255, 255, 0.05) 25%, transparent 25%, transparent 50%, 
-                        rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.05) 75%, transparent 75%, transparent);
-            background-size: 100px 100px;
-            z-index: -1;
-        }
-
-        h1 {
-            font-family: 'Rubik Spray Paint', cursive;
-            font-size: 50px;
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .container {
-            text-align: center;
-            width: 350px;
-            padding: 20px;
-            border-radius: 10px;
-            border: 2px solid #fff;
-            backdrop-filter: blur(5px);
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        h2 {
-            font-size: 24px;
-            margin-bottom: 15px;
-            font-family: Arial, sans-serif;
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #fff;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background: #fff;
-            color: #000;
-            border: none;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-
-        button:hover {
-            background: #ccc;
-        }
-
-        .loading {
-            display: none;
-            margin-top: 10px;
-            font-size: 14px;
-            color: #ccc;
-        }
-    </style>
-</head>
-<body>
-
-    <h1>EzRugged</h1> 
-
-    <div class="container">
-        <h2>Create Your Token</h2>
-        <input type="text" id="name" placeholder="Token Name">
-        <input type="text" id="ticker" placeholder="Ticker Symbol">
-        <input type="number" id="decimals" placeholder="Decimals">
-        <input type="text" id="description" placeholder="Description">
-        <input type="text" id="imageLink" placeholder="Image Link">
-        <button onclick="connectWallet()">Connect Phantom Wallet</button>
-        <button onclick="triggerPayment()">Create Token & Pay Fee</button>
-        <p class="loading" id="loadingText">Processing...</p>
-    </div>
-
     <script type="module">
         import { Connection, PublicKey, Transaction, SystemProgram, clusterApiUrl } from "https://cdn.jsdelivr.net/npm/@solana/web3.js@latest/+esm";
 
         let walletPublicKey = null;
         
         async function connectWallet() {
-            try {
-                const provider = window.solana;
-                if (!provider || !provider.isPhantom) {
-                    alert("Phantom Wallet not found! Install it from https://phantom.app/");
-                    return;
+            if (window.solana && window.solana.isPhantom) {
+                try {
+                    const response = await window.solana.connect();
+                    walletPublicKey = response.publicKey.toString();
+                    alert("Connected: " + walletPublicKey);
+                } catch (err) {
+                    console.error("Wallet Connection Error:", err);
+                    alert("Failed to connect Phantom Wallet.");
                 }
-if (window.solana && window.solana.isPhantom) {
-    console.log("Phantom Wallet is installed!");
-} else {
-    console.log("Phantom Wallet NOT detected!");
-}
-
-                const response = await provider.connect();
-                walletPublicKey = response.publicKey.toString();
-                alert("Connected to Phantom Wallet: " + walletPublicKey);
-            } catch (err) {
-                console.error("Wallet Connection Error:", err);
-                alert("Failed to connect wallet.");
+            } else {
+                alert("Phantom Wallet not found! Install it from https://phantom.app/");
             }
         }
 
@@ -146,36 +30,34 @@ if (window.solana && window.solana.isPhantom) {
                 return;
             }
 
-            document.getElementById('loadingText').style.display = "block";
-
             try {
                 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
                 const transaction = new Transaction().add(
                     SystemProgram.transfer({
                         fromPubkey: new PublicKey(walletPublicKey),
-                        toPubkey: new PublicKey("Your_Solana_Address_Here"), // Change this to your receiving wallet address
-                        lamports: 100000000, // 0.1 SOL (1 SOL = 1,000,000,000 lamports)
+                        toPubkey: new PublicKey("YOUR_WALLET_ADDRESS_HERE"),
+                        lamports: 100000000,
                     })
                 );
 
                 transaction.feePayer = new PublicKey(walletPublicKey);
                 transaction.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
 
-                const provider = window.solana;
-                const signedTransaction = await provider.signTransaction(transaction);
+                const signedTransaction = await window.solana.signTransaction(transaction);
                 const signature = await connection.sendRawTransaction(signedTransaction.serialize());
                 await connection.confirmTransaction(signature, "confirmed");
 
-                alert("Payment successful! Token will be created.");
-                document.getElementById('loadingText').style.display = "none";
+                alert("Payment successful! Transaction ID: " + signature);
             } catch (err) {
                 console.error("Payment Error:", err);
-                alert("Payment failed. Please try again.");
-                document.getElementById('loadingText').style.display = "none";
+                alert("Payment failed.");
             }
         }
     </script>
-
+</head>
+<body>
+    <h1>EzRugged</h1>
+    <button onclick="connectWallet()">Connect Phantom Wallet</button>
+    <button onclick="triggerPayment()">Pay Fee</button>
 </body>
 </html>
