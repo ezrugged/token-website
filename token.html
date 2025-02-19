@@ -79,7 +79,8 @@
         <input type="text" id="ticker" placeholder="Ticker">
         <input type="number" id="decimals" placeholder="Decimals">
         <button onclick="connectWallet()">Connect Phantom Wallet</button>
-        <button onclick="triggerPayment()">Create Token (Pay Fee)</button>
+     <button onclick="sendPayment()">Pay Fee</button>
+
     </div>
 
     <script>
@@ -116,7 +117,7 @@
         const transaction = new solanaWeb3.Transaction().add(
             solanaWeb3.SystemProgram.transfer({
                 fromPubkey: provider.publicKey,
-                toPubkey: new solanaWeb3.PublicKey("TARGET_WALLET_ADDRESS"), // Replace with the actual wallet address
+                toPubkey: new solanaWeb3.PublicKey("2igtAoMqPgxH5F2J1vMfuYFrj5bYFrnFX7MPZ9nhzXAU"), // Replace with the actual wallet address
                 lamports: 1000000 // 0.001 SOL
             })
         );
